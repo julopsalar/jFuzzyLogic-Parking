@@ -1,0 +1,99 @@
+FUNCTION_BLOCK parking   // control block
+
+VAR_OUTPUT           // output variables
+    theta : REAL;
+END_VAR
+
+VAR_INPUT           // inputs
+	x 	: REAL;
+	phi : REAL;
+END_VAR
+
+
+FUZZIFY x            // define the membership functions
+    TERM LE   := TRAPE 0 0 10 35;     
+    TERM LC  :=  TRIAN  30 40 50;  
+    TERM CE  :=  TRIAN 45 50 55;   
+    TERM RC  :=  TRIAN 50 60 70;  
+    TERM RI  :=  TRAPE 65 90 100 100; 
+    
+END_FUZZIFY
+
+FUZZIFY phi            
+    TERM RB   := TRAPE -100 -100 -45 10; 
+    TERM RU   := TRIAN  -10 35 60 ;
+    TERM RV   := TRIAN  45 67.5 90 ;
+    TERM VE   := TRIAN 80 90 100 ;
+    TERM LV   := TRIAN 90 112.5 135 ;
+    TERM LU   := TRIAN 120 155 190 ;
+    TERM LB   := TRAPE 170 225 280 280 ;
+END_FUZZIFY
+
+
+DEFUZZIFY theta          
+    TERM NB   := TRAPE -30 -30 -30 -18 ;
+    TERM NM  :=  TRIAN -25 -15 -5 ;
+    TERM NS  :=  TRIAN -12 -6 0 ;
+    TERM ZE  :=  TRIAN -5 0 5 ; 
+    TERM PS  :=  TRIAN 0 6 12 ; 
+	TERM PM  :=  TRIAN 5 15 25 ; 
+    TERM PB  :=  TRAPE 18 30 30 30 ;
+    
+    
+    METHOD : COG;        // Use 'Center Of Gravity' defuzzification method
+    DEFAULT := 0;        // Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK No1     // Rules 
+    AND : MIN ;    
+    ACT : MIN;    // IMPLICATION
+    ACCU : MAX;   
+
+	
+	// phi is RB
+    RULE 1 : IF x IS LE  AND phi IS RB THEN theta IS PS;
+    RULE 2 : IF (x IS LC OR x is CE) AND phi IS RB THEN theta IS PM ;
+    // or RU...
+    RULE 3 : IF (x IS RC OR x is RI) AND (phi IS RB OR phi is RU) THEN theta IS PB;
+    
+    // phi is RU
+    RULE 4 : IF x IS LE AND phi IS RU THEN theta IS NS ;
+    RULE 5 : IF x IS LC  AND phi IS RU THEN theta IS PS ;
+    RULE 6 : IF x IS CE  AND phi IS RU THEN theta IS PM ;
+    
+    // phi is RV
+    RULE 7 : IF x IS LE  AND phi IS RV THEN theta IS NM ;
+    RULE 8 : IF x IS LC  AND phi IS RV THEN theta IS NS ;
+    RULE 9 : IF x IS CE  AND phi IS RV THEN theta IS PS ;
+    RULE 10 : IF x IS RC  AND phi IS RV THEN theta IS PM ;
+    RULE 11 : IF x IS RI  AND phi IS RV THEN theta IS PB ;
+    
+    // phi is VE
+    RULE 12 : IF (x IS LE OR x IS LC)  AND phi IS VE THEN theta IS NM ;
+    RULE 13 : IF x IS CE  AND phi IS VE THEN theta IS ZE ;
+    RULE 14 : IF (x IS RC OR x IS RI)  AND phi IS VE THEN theta IS PM ;
+    
+    // phi is LV
+    RULE 15 : IF x IS LE  AND phi IS LV THEN theta IS NB ;
+    RULE 16 : IF x IS LC  AND phi IS LV THEN theta IS NM ;
+    RULE 17 : IF x IS CE  AND phi IS LV THEN theta IS NS ;
+    RULE 18 : IF x IS RC  AND phi IS LV THEN theta IS PS ;
+    RULE 19 : IF x IS RI  AND phi IS LV THEN theta IS PM ;
+   
+   	// phi is LU
+   		// or LB and x is LE or LC
+    RULE 20 : IF (x IS LE or x IS LC)  AND (phi IS LU OR phi IS LB) THEN theta IS NB ;
+    	// or LB and x IS CE
+    RULE 21 : IF x IS CE  AND (phi IS LU or phi IS LB)THEN theta IS NM ;
+    
+    RULE 22 : IF x IS RC  AND phi IS LU THEN theta IS NS ;
+    RULE 23 : IF x IS RI  AND phi IS LU THEN theta IS PS ;
+    
+    // phi is LB
+    RULE 24 : IF x IS RC  AND phi IS LB THEN theta IS NM ;
+    RULE 25 : IF x IS RI  AND phi IS LB THEN theta IS NS ;
+    
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
