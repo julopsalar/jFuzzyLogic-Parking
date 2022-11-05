@@ -4,4 +4,7 @@ This academic project consist on an implementation of a *Fuzzy Inference System*
 The truck is represented as a red rectangle, and starting at a certain position (random each simulation), must finish at x=50, and phi=90 (perpendicular). The way it ends up at the correct position uses certain **rules**. These are defined in the file *src/fcl/Parking.fcl*.
 
 One possible simulation could be as follows:
-![First](imgs/a.png?raw=true "first")
+| | | |
+| --- | --- | --- |
+| ![First](imgs/a.png?raw=true "first")| ![First](imgs/b.png?raw=true "second") | ![First](imgs/c.png?raw=true "third") |
+| ![First](imgs/d.png?raw=true "first")| ![First](imgs/e.png?raw=true "second") | ![First](imgs/f.png?raw=true "third") |
